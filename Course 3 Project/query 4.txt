@@ -1,0 +1,22 @@
+-- 4 - Determine the customer that has spent the most on music for each country.
+WITH customer_spending_country AS (
+    SELECT i."BillingCountry" "Country", c."CustomerId", SUM(i."Total") sum_total
+    FROM "Customer" c
+    JOIN "Invoice" i
+    ON i."CustomerId" = c."CustomerId"
+    GROUP BY 1, 2
+),
+
+max_customer_country AS (
+    SELECT csc."Country", MAX(csc.sum_total) max_total
+    FROM customer_spending_country csc
+    GROUP BY 1
+)
+
+SELECT mcc."Country", mcc.max_total, c."FirstName", c."LastName", c."CustomerId"
+FROM max_customer_country mcc
+JOIN customer_spending_country msc
+ON mcc."Country" = msc."Country" AND mcc.max_total = msc.sum_total
+JOIN "Customer" c
+ON msc."CustomerId" = c."CustomerId"
+ORDER BY 1;

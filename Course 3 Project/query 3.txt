@@ -1,0 +1,23 @@
+-- 3 - Find out the most popular music Genre for each country.
+WITH count_genres_in_countries AS (
+    SELECT COUNT(il."InvoiceLineId") n_purchases, i."BillingCountry" "Country", g."GenreId"
+    FROM "Invoice" i
+    JOIN "InvoiceLine" il ON il."InvoiceId" = i."InvoiceId"
+    JOIN "Track" t ON t."TrackId" = il."TrackId"
+    JOIN "Genre" g ON t."GenreId" = g."GenreId"
+    GROUP BY 2, 3
+),
+
+max_genres_in_countries AS (
+    SELECT MAX(cgic.n_purchases) max_purchases, cgic."Country"
+    FROM count_genres_in_countries cgic
+    GROUP BY 2
+)
+
+SELECT mgic.max_purchases, cgic."Country", g."Name", g."GenreId"
+FROM max_genres_in_countries mgic
+JOIN count_genres_in_countries cgic
+ON mgic."Country" = cgic."Country" AND mgic.max_purchases = cgic.n_purchases
+JOIN "Genre" g
+ON cgic."GenreId" = g."GenreId"
+ORDER BY 2;
