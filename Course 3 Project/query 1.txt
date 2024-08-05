@@ -1,0 +1,13 @@
+1 - Artist name and total track count of the top 10 rock bands.
+SELECT ar."ArtistId", ar."Name", COUNT(t."TrackId") AS Songs
+FROM "Artist" ar
+JOIN "Album" al
+ON ar."ArtistId" = al."ArtistId"JOIN
+JOIN "Track" t
+ON t."AlbumId" = al."AlbumId"
+JOIN "Genre" g
+ON g."GenreId" = t."GenreId"
+WHERE g."Name" = 'Rock'
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 10;

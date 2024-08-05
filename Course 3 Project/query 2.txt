@@ -1,0 +1,24 @@
+-- 2 - Customers spending on the artist who earned the most
+WITH top_artist AS (
+    SELECT ar."ArtistId", ar."Name", SUM(il."UnitPrice"*il."Quantity")
+    FROM "InvoiceLiUne" il
+    JOIN "Track" t
+    ON t."TrackId" = il."TrackId"
+    JOIN "Album" al
+    ON t."AlbumId" = al."AlbumId"
+    JOIN "Artist" ar
+    ON ar."ArtistId" = al."ArtistId"
+    GROUP BY 1, 2
+    ORDER BY 3 DESC
+    LIMIT 1
+)
+
+SELECT tar."Name", SUM(i."Total"), c."CustomerId", c."FirstName", c."LastName"
+FROM "Customer" c
+JOIN "Invoice" i ON  c."CustomerId" = i."CustomerId"
+JOIN "InvoiceLine" il ON il."InvoiceId" = i."InvoiceId"
+JOIN "Track" t ON t."TrackId" = il."TrackId"
+JOIN "Album" al ON t."AlbumId" = al."AlbumId"
+JOIN top_artist tar ON tar."ArtistId" = al."ArtistId"
+GROUP BY 1, 3, 4, 5
+ORDER BY 2 DESC;
